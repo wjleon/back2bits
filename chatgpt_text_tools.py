@@ -27,6 +27,7 @@ import os
 import sys
 import datetime
 import openai
+import keyring
 
 # Constants for OpenAI models
 MODEL_CHECK_GRAMMAR = "gpt-4o-2024-08-06"
@@ -130,7 +131,14 @@ def main():
 
     task = sys.argv[1].lower()
     text = sys.argv[2] if len(sys.argv) > 2 else None
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = keyring.get_password("OPENAI_API_KEY", "ChatGPT Integration")
+
+    if not api_key:
+        print("API key not found in Keychain. Please add it first.")
+        print("Use Keychain Access to add the key with:")
+        print(" - Service name: OPENAI_API_KEY")
+        print(" - Account name: ChatGPT Integration")
+        sys.exit(1)
 
     try:
         helper = ChatGPTHelper(api_key)
